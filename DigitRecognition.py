@@ -5,19 +5,14 @@ import numpy as np
 import sklearn.preprocessing as pre
 import matplotlib.pyplot as plt
 
+from keras.datasets import mnist
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.layers import Dropout
+from keras.utils import np_utils
+
 # Start neural network
 model = kr.models.Sequential()
-
-# Add a hidden layer with 1000 neurons and an input layer with 784
-model.add(kr.layers.Dense(units=1000, activation='linear', input_dim=784))
-model.add(kr.layers.Dense(units=400, activation='relu'))
-
-# Add 10 output neurons, one for each
-model.add(kr.layers.Dense(units=10, activation='softmax'))
-
-# Build the network graph
-model.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accuracy'])
-
 
 # Read in all the files
 with gzip.open('data/t10k-images-idx3-ubyte.gz', 'rb') as f:
@@ -48,8 +43,40 @@ encoder = pre.LabelBinarizer()
 encoder.fit(training_labels)
 outputs = encoder.transform(training_labels)
 
-model.fit(inputs, outputs, epochs=20, batch_size=100)
+# Adapted from
+model = Sequential()
 
-for i in range(20): #Run 20 tests
+model.add(kr.layers.Dense(units=750, activation='relu', input_dim=784))
+model.add(kr.layers.Dense(units=512, activation='relu'))
+model.add(kr.layers.Dense(units=200, activation='relu'))
+model.add(kr.layers.Dense(units=120, activation='relu'))
+#model.add(kr.layers.Dense(units=50, activation='relu'))
+# Compile model
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+
+
+# Add 10 output neurons, one for each
+model.add(kr.layers.Dense(units=10, activation='softmax'))
+
+
+
+print("Would you like to train dataset?")
+option = input("y/n : ")
+if option == 'y':
+    #Train
+    model.fit(inputs, outputs, epochs=20, batch_size=100)
+    
+    # Save the model
+    model.save("data/model.h5")
+
+    
+    from random import randint
+
+    for i in range(20): #Run 20 tests
         print(i, encoder.transform([i]))
- 
+    scores = model.evaluate(inputs, outputs, verbose=2)
+    print("Error Rate: %.2f%%" % (100-scores[1]*100))
+
+elif option == 'n':
+   model.load_weights("data/model.h5")
