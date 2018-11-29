@@ -1,3 +1,12 @@
+#Abigail Culkin
+# References and adapted files from
+"""
+http://brianfarris.me/static/digit_recognizer.html
+https://www.digitalocean.com/community/tutorials/how-to-build-a-neural-network-to-recognize-handwritten-digits-with-tensorflow
+https://machinelearningmastery.com/handwritten-digit-recognition-using-convolutional-neural-networks-python-keras/
+https://www.kaggle.com/ngbolin/mnist-dataset-digit-recognizer
+"""
+
 # imports
 import gzip
 import keras as kr
@@ -8,8 +17,7 @@ import matplotlib.pyplot as plt
 from keras.datasets import mnist
 from keras.models import Sequential
 from keras.layers import Dense
-from keras.layers import Dropout
-from keras.utils import np_utils
+from keras.models import load_model
 
 # Start neural network
 model = kr.models.Sequential()
@@ -43,17 +51,17 @@ encoder = pre.LabelBinarizer()
 encoder.fit(training_labels)
 outputs = encoder.transform(training_labels)
 
-# Adapted from
+#Build our neural network model
+# Adapted from https://machinelearningmastery.com/handwritten-digit-recognition-using-convolutional-neural-networks-python-keras/
+# 5 layers - input layer, 3 hidden layer and 1 output layer
 model = Sequential()
 
+# Simple Neural Network with 3 layers (750, 512, 200)
 model.add(kr.layers.Dense(units=750, activation='relu', input_dim=784))
 model.add(kr.layers.Dense(units=512, activation='relu'))
 model.add(kr.layers.Dense(units=200, activation='relu'))
-model.add(kr.layers.Dense(units=120, activation='relu'))
-#model.add(kr.layers.Dense(units=50, activation='relu'))
-# Compile model
+# Compile model - Adam optimizer for our model
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-
 
 
 # Add 10 output neurons, one for each
@@ -61,22 +69,30 @@ model.add(kr.layers.Dense(units=10, activation='softmax'))
 
 
 
-print("Would you like to train dataset?")
+print("Would you like to train dataset?  (Train 0n 60000 samples and validate on 10000 samples)")
 option = input("y/n : ")
 if option == 'y':
-    #Train
+    #Train - The model is going to fit over 20 epochs and updates after every 100 images training.
     model.fit(inputs, outputs, epochs=20, batch_size=100)
     
-    # Save the model
+    # Save the model - store my model on my local hard disk
     model.save("data/model.h5")
 
-    
     from random import randint
 
     for i in range(20): #Run 20 tests
         print(i, encoder.transform([i]))
+        
+    #print out accuracy
+    metrics = model.evaluate(inputs, outputs, verbose=0)
+    print("Metrics(Test loss & Test Accuracy): ")
+    print(metrics)
+
+    # Error accuracy
     scores = model.evaluate(inputs, outputs, verbose=2)
     print("Error Rate: %.2f%%" % (100-scores[1]*100))
 
 elif option == 'n':
-   model.load_weights("data/model.h5")
+    #load the model
+    #Adapted from https://medium.com/coinmonks/handwritten-digit-prediction-using-convolutional-neural-networks-in-tensorflow-with-keras-and-live-5ebddf46dc8
+    model = load_model('data/model.h5')
