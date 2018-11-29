@@ -61,7 +61,7 @@ model.add(kr.layers.Dense(units=750, activation='relu', input_dim=784))
 model.add(kr.layers.Dense(units=512, activation='relu'))
 model.add(kr.layers.Dense(units=200, activation='relu'))
 # Compile model - Adam optimizer for our model
-model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 
 # Add 10 output neurons, one for each
@@ -88,9 +88,11 @@ if option == 'y':
     print("Metrics(Test loss & Test Accuracy): ")
     print(metrics)
 
-    # Error accuracy
+    # Evaluates and then prints error rate accuracy
     scores = model.evaluate(inputs, outputs, verbose=2)
     print("Error Rate: %.2f%%" % (100-scores[1]*100))
+
+    print((encoder.inverse_transform(model.predict(test_images)) == test_labels).sum())
 
 elif option == 'n':
     #load the model
