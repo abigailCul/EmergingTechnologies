@@ -80,6 +80,7 @@ if option == 'y':
 
     from random import randint
 
+    # Run 20 tests instead of the 10000 in the file
     for i in range(20): #Run 20 tests
         print(i, encoder.transform([i]))
         
