@@ -69,7 +69,7 @@ model.add(kr.layers.Dense(units=10, activation='softmax'))
 
 
 
-print("Would you like to train dataset?  (Train 0n 60000 samples and validate on 10000 samples)")
+print("Would you like to train dataset? 'y' or load the data you have 'n'?")
 option = input("y/n : ")
 if option == 'y':
     #Train - The model is going to fit over 20 epochs and updates after every 100 images training.
@@ -97,4 +97,4 @@ if option == 'y':
 elif option == 'n':
     #load the model
     #Adapted from https://medium.com/coinmonks/handwritten-digit-prediction-using-convolutional-neural-networks-in-tensorflow-with-keras-and-live-5ebddf46dc8
-    model = load_model('data/model.h5')
+     load_model('data/model.h5')
